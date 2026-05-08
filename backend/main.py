@@ -34,17 +34,21 @@ app.add_middleware(
 # ─────────────────────────────────────────────
 # Load Model Artifacts
 # ─────────────────────────────────────────────
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 try:
+    # We join paths safely to find files in the same directory as main.py
     model = joblib.load(os.path.join(BASE_DIR, "xgboost_diabetes_model.pkl"))
     scaler = joblib.load(os.path.join(BASE_DIR, "scaler.pkl"))
     feature_names = joblib.load(os.path.join(BASE_DIR, "feature_names.pkl"))
-    print("[OK] Model artifacts loaded successfully")
-    print(f"  Features: {feature_names}")
+    print(f"[OK] Model artifacts loaded successfully from: {BASE_DIR}")
+    print(f"Features: {feature_names}")
 except Exception as e:
     print(f"[ERR] Failed to load model artifacts: {e}")
+    # This helps you see exactly where it tried to look in the Railway logs
+    print(f"Attempted search path: {BASE_DIR}")
     model = scaler = feature_names = None
+
 
 # ─────────────────────────────────────────────
 # Feature Importance (static, computed once)

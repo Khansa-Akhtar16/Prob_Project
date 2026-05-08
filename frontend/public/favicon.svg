@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Handle -->
+  <rect x="62" y="62" width="16" height="34" rx="6" transform="rotate(-45 68 77)" fill="#F0EDE8" />
+  <rect x="65" y="65" width="6" height="20" rx="3" transform="rotate(-45 67 75)" fill="#0D0D0F" opacity="0.5" />
+
+  <!-- Outer Ring -->
+  <circle cx="45" cy="45" r="32" stroke="#F0EDE8" stroke-width="10" fill="none"/>
+  
+  <!-- Chart Axes -->
+  <polyline points="25,25 25,60 60,60" stroke="#F0EDE8" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Cluster Dots (Teal/Cyan) -->
+  <circle cx="34" cy="50" r="5" fill="#2BD9FA" />
+  <circle cx="46" cy="53" r="5" fill="#2BD9FA" />
+  <circle cx="40" cy="40" r="5" fill="#2BD9FA" />
+  <circle cx="52" cy="45" r="5" fill="#2BD9FA" />
+  
+  <!-- Outlier Dot (Orange) -->
+  <circle cx="62" cy="28" r="6.5" fill="#FF8C33" />
+</svg>

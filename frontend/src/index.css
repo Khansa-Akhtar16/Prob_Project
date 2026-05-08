@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: theme('colors.background');
+  color: theme('colors.text');
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── Grain overlay ── */
+.grain-overlay {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 9999;
+  animation: grain 0.8s steps(1) infinite;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: theme('colors.background'); }
+::-webkit-scrollbar-thumb { background: theme('colors.surface'); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: theme('colors.primary'); }
+
+/* ── Custom selection ── */
+::selection { background: rgba(13, 148, 136, 0.3); color: theme('colors.text'); }
+
+/* ── Typography utilities ── */
+.font-grotesk { font-family: 'Space Grotesk', sans-serif; }
+.font-mono-dm { font-family: 'DM Mono', monospace; }
+
+/* ── Field focus animation ── */
+.field-line {
+  position: relative;
+}
+.field-line::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  right: 50%;
+  height: 1px;
+  background: theme('colors.primary');
+  transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1), right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.field-line:focus-within::after {
+  left: 0;
+  right: 0;
+}
+
+/* ── Sidebar ── */
+.sidebar-item-active {
+  border-left: 2px solid theme('colors.primary');
+  color: theme('colors.text');
+}
+.sidebar-item-active .sidebar-icon { color: theme('colors.primary'); }
+
+/* ── Risk bar marker ── */
+@keyframes markerSlide {
+  from { left: 0%; }
+  to { left: var(--marker-pos); }
+}
+.risk-marker { animation: markerSlide 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* ── Number count-up util ── */
+.count-up-ready { opacity: 0; }
+.count-up-done { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* ── Page transitions ── */
+.page-enter { opacity: 0; transform: translateX(24px); }
+.page-enter-done { opacity: 1; transform: translateX(0); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* ── Thin divider ── */
+.divider { height: 1px; background: theme('colors.border'); }
+
+/* ── Bloomberg table ── */
+.bloomberg-table th {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: theme('colors.textMuted');
+  border-bottom: 1px solid theme('colors.border');
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+}
+.bloomberg-table td {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid theme('colors.border');
+}
+.bloomberg-table tr:hover td { background: theme('colors.surface'); }
+
+/* ── Stagger animation helpers ── */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
+/* ── Pill selector ── */
+.pill-option {
+  border: 1px solid theme('colors.border');
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+.pill-option:hover {
+  border-color: theme('colors.secondary');
+  background: theme('colors.surface');
+}
+.pill-option.selected {
+  border-color: theme('colors.primary');
+  background: rgba(13, 148, 136, 0.1);
+  color: theme('colors.text');
+}
+
+/* ── Glow effects ── */
+.glow-primary { box-shadow: 0 0 40px rgba(20, 184, 166, 0.15); }
+
+/* ── Instrument readout ── */
+.readout {
+  font-family: 'DM Mono', monospace;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Loading overlay ── */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: theme('colors.background');
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

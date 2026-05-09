@@ -1,3 +1,4 @@
+
 """
 Diabetes Risk & Severity Prediction System
 FastAPI Backend — main.py
@@ -7,9 +8,7 @@ import os
 import numpy as np
 import joblib
 from fastapi import FastAPI, HTTPException
-# pyrefly: ignore [missing-import]
 from fastapi.middleware.cors import CORSMiddleware
-# pyrefly: ignore [missing-import]
 from pydantic import BaseModel, Field, validator
 from typing import Optional
 import uvicorn
@@ -30,32 +29,42 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# ─────────────────────────────────────────────
-# Load Model Artifacts (THE ABSOLUTE FIX)
-# ─────────────────────────────────────────────
-import os
-import joblib
-
-# On Railway, the project is always in /app
-# This hardcoded path removes all the 'dirname' guessing games
-ROOT_DIR = "/app"
-
-try:
-    # We join paths to look exactly in /app/filename
-    model = joblib.load(os.path.join(ROOT_DIR, "xgboost_diabetes_model.pkl"))
-    scaler = joblib.load(os.path.join(ROOT_DIR, "scaler.pkl"))
-    feature_names = joblib.load(os.path.join(ROOT_DIR, "feature_names.pkl"))
-    
-    print(f"[OK] Model artifacts loaded from: {ROOT_DIR}")
-    print(f"Features: {feature_names}")
-except Exception as e:
-    print(f"[ERR] Failed to load model artifacts: {e}")
-    # This will now confirm it looked in /app
-    print(f"Looked in: {ROOT_DIR}")
-    model = scaler = feature_names = None
 
 # ─────────────────────────────────────────────
-# Feature Importance (static, computed once)
+# Load Model Artifacts (DIAGNOSTIC VERSION)
+# ─────────────────────────────────────────────
+# This replaces the old ROOT_DIR logic to find where files are hiding
+CURRENT_PATH = os.getcwd()
+print(f"DIAGNOSTIC: Current Working Directory is: {CURRENT_PATH}")
+print(f"DIAGNOSTIC: Files found here: {os.listdir(CURRENT_PATH)}")
+
+possible_paths = [
+    "xgboost_diabetes_model.pkl",
+    "../xgboost_diabetes_model.pkl",
+    "/app/xgboost_diabetes_model.pkl",
+    "backend/xgboost_diabetes_model.pkl"
+]
+
+model = scaler = feature_names = None
+
+for path in possible_paths:
+    if os.path.exists(path):
+        try:
+            model = joblib.load(path)
+            # If model loads, load the others from same spot
+            base = os.path.dirname(path) if os.path.dirname(path) else "."
+            scaler = joblib.load(os.path.join(base, "scaler.pkl"))
+            feature_names = joblib.load(os.path.join(base, "feature_names.pkl"))
+            print(f"[OK] FOUND AND LOADED artifacts at: {path}")
+            break
+        except Exception as e:
+            print(f"[ERR] Found file at {path} but failed to load: {e}")
+
+if not model:
+    print("[CRITICAL] Could not find model files anywhere in possible paths.")
+
+# ─────────────────────────────────────────────
+# Feature Importance
 # ─────────────────────────────────────────────
 FEATURE_IMPORTANCE_MAP = None
 if model and feature_names:

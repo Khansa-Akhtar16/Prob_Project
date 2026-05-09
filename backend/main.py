@@ -30,32 +30,29 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # ─────────────────────────────────────────────
-# Load Model Artifacts (FINAL ROOT FOLDER FIX)
+# Load Model Artifacts (THE ABSOLUTE FIX)
 # ─────────────────────────────────────────────
 import os
 import joblib
 
-# This is /app/backend
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-# This points to /app (where your .pkl files are)
-ROOT_DIR = os.path.dirname(CURRENT_DIR)
+# On Railway, the project is always in /app
+# This hardcoded path removes all the 'dirname' guessing games
+ROOT_DIR = "/app"
 
 try:
-    # We join paths to look in the parent (root) folder
+    # We join paths to look exactly in /app/filename
     model = joblib.load(os.path.join(ROOT_DIR, "xgboost_diabetes_model.pkl"))
     scaler = joblib.load(os.path.join(ROOT_DIR, "scaler.pkl"))
     feature_names = joblib.load(os.path.join(ROOT_DIR, "feature_names.pkl"))
     
-    print(f"[OK] Model artifacts loaded from root: {ROOT_DIR}")
+    print(f"[OK] Model artifacts loaded from: {ROOT_DIR}")
     print(f"Features: {feature_names}")
 except Exception as e:
     print(f"[ERR] Failed to load model artifacts: {e}")
-    # This helps verify the path in Railway logs
+    # This will now confirm it looked in /app
     print(f"Looked in: {ROOT_DIR}")
     model = scaler = feature_names = None
-
 
 # ─────────────────────────────────────────────
 # Feature Importance (static, computed once)

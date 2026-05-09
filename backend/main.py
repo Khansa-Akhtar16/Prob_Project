@@ -32,34 +32,30 @@ app.add_middleware(
 )
 
 # ─────────────────────────────────────────────
-# Load Model Artifacts
+# Load Model Artifacts (FINAL ROOT FOLDER FIX)
 # ─────────────────────────────────────────────
-# ─────────────────────────────────────────────
-# Load Model Artifacts (SMART PATH FIX)
-# ─────────────────────────────────────────────
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+import os
+import joblib
 
-def load_artifact(filename):
-    # Path 1: Same folder as main.py
-    path1 = os.path.join(BASE_DIR, filename)
-    # Path 2: Inside a 'backend' folder (common Railway setup)
-    path2 = os.path.join(BASE_DIR, "backend", filename)
-    
-    if os.path.exists(path1):
-        return joblib.load(path1)
-    elif os.path.exists(path2):
-        return joblib.load(path2)
-    else:
-        raise FileNotFoundError(f"Could not find {filename} in {path1} or {path2}")
+# This is /app/backend
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# This points to /app (where your .pkl files are)
+ROOT_DIR = os.path.dirname(CURRENT_DIR)
 
 try:
-    model = load_artifact("xgboost_diabetes_model.pkl")
-    scaler = load_artifact("scaler.pkl")
-    feature_names = load_artifact("feature_names.pkl")
-    print("[OK] Model artifacts loaded successfully")
+    # We join paths to look in the parent (root) folder
+    model = joblib.load(os.path.join(ROOT_DIR, "xgboost_diabetes_model.pkl"))
+    scaler = joblib.load(os.path.join(ROOT_DIR, "scaler.pkl"))
+    feature_names = joblib.load(os.path.join(ROOT_DIR, "feature_names.pkl"))
+    
+    print(f"[OK] Model artifacts loaded from root: {ROOT_DIR}")
+    print(f"Features: {feature_names}")
 except Exception as e:
     print(f"[ERR] Failed to load model artifacts: {e}")
+    # This helps verify the path in Railway logs
+    print(f"Looked in: {ROOT_DIR}")
     model = scaler = feature_names = None
+
 
 # ─────────────────────────────────────────────
 # Feature Importance (static, computed once)
